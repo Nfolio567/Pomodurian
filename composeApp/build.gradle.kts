@@ -92,8 +92,12 @@ compose.desktop {
 
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-      packageName = "one.nfolio.pomodurian"
+      packageName = "Pomodurian"
       packageVersion = "1.0.0"
+
+      macOS {
+        iconFile.set(project.file("icon/icon.icns"))
+      }
     }
   }
 }
