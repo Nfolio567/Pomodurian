@@ -88,10 +88,16 @@ compose.desktop {
   application {
     mainClass = "one.nfolio.pomodurian.MainKt"
 
+    jvmArgs += listOf("-Dapple.awt.UIElement=true", "--enable-native-access=ALL-UNNAMED")
+
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
       packageName = "one.nfolio.pomodurian"
       packageVersion = "1.0.0"
     }
   }
+}
+
+compose.resources {
+  publicResClass = true
 }
