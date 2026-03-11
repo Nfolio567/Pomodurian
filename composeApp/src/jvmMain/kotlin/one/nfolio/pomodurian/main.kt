@@ -1,5 +1,6 @@
 package one.nfolio.pomodurian
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -16,14 +17,19 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import androidx.compose.runtime.Composable
 import org.jetbrains.compose.resources.painterResource
 
 import pomodurian.composeapp.generated.resources.Res
 import pomodurian.composeapp.generated.resources.durian
 import java.awt.Toolkit
+import java.awt.event.WindowEvent
+import java.awt.event.WindowFocusListener
+import java.awt.event.WindowListener
 
 fun main() = application {
   var windowFlag by remember { mutableStateOf(true) }
+  var contentSwitch: @Composable () -> Unit by remember { mutableStateOf(::App) }
 
   val screenSize = Toolkit.getDefaultToolkit().screenSize
   val windowWidth = 400.dp
@@ -44,11 +50,14 @@ fun main() = application {
       }
       Item("Setting"){}
       Separator()
-      Item("About"){}
+      Item("About") {
+        contentSwitch = ::About
+        windowFlag = true
+      }
       Item("Github"){}
       Item("How to use"){}
       Separator()
-      Item("Quit Pomodurian"){}
+      Item("Quit Pomodurian", onClick = ::exitApplication)
     },
     onAction = {
       windowFlag = !windowFlag
@@ -56,23 +65,35 @@ fun main() = application {
   )
 
   Window(
-    onCloseRequest = { windowFlag = false },
+    onCloseRequest = {
+      windowFlag = false
+      contentSwitch = ::App
+    },
     state = windowState,
     visible = windowFlag,
-    title = "pomodurian",
     undecorated = true,
     transparent = true,
     resizable = false
   ) {
-    Surface(
-      modifier = Modifier.fillMaxSize().padding(20.dp),
-      shape = RoundedCornerShape(12.dp)
+    window.toFront()
+    window.requestFocus()
+
+    window.addWindowFocusListener(object : WindowFocusListener {
+      override fun windowGainedFocus(e: WindowEvent?) {
+        // empty
+      }
+      override fun windowLostFocus(e: WindowEvent?) {
+        windowFlag = false
+      }
+    })
+    Box(
+      modifier = Modifier.fillMaxSize().padding(20.dp)
     ) {
       Surface(
         shape = RoundedCornerShape(12.dp),
         shadowElevation = 12.dp
       ) {
-        App()
+        contentSwitch()
       }
     }
   }
