@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 
 import pomodurian.composeapp.generated.resources.Res
@@ -24,6 +25,8 @@ import pomodurian.composeapp.generated.resources.compose_multiplatform
 fun App() {
   MaterialTheme {
     var showContent by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
     Column(
       modifier = Modifier
         .background(MaterialTheme.colorScheme.primaryContainer)
@@ -33,6 +36,10 @@ fun App() {
     ) {
       Button(onClick = { showContent = !showContent }) {
         Text("Click me!")
+
+        scope.launch {
+          PlayNoise.white()
+        }
       }
       AnimatedVisibility(showContent) {
         val greeting = remember { Greeting().greet() }
