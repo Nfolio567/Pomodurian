@@ -14,7 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.painterResource
 
 import pomodurian.composeapp.generated.resources.Res
@@ -25,7 +27,27 @@ import pomodurian.composeapp.generated.resources.compose_multiplatform
 fun App() {
   MaterialTheme {
     var showContent by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    var isPlay by remember { mutableStateOf(false) }
+    val bufferSize = remember{ 1024 }
+    val play = remember { Play(bufferSize) }
+
+    LaunchedEffect(isPlay){
+      if (isPlay) {
+        println("unko")
+        withContext(Dispatchers.Default) {
+          play.start()
+          while (true) {
+            play.fromPCMs(
+              Sounds(true) {
+                GenerateNoise.white(bufferSize)
+              })
+          }
+        }
+      } else {
+        println("not unko")
+        play.stop()
+      }
+    }
 
     Column(
       modifier = Modifier
@@ -34,12 +56,11 @@ fun App() {
         .fillMaxSize(),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Button(onClick = { showContent = !showContent }) {
+      Button(onClick = {
+        showContent = !showContent
+        isPlay = !isPlay
+      }) {
         Text("Click me!")
-
-        scope.launch {
-          PlayNoise.white()
-        }
       }
       AnimatedVisibility(showContent) {
         val greeting = remember { Greeting().greet() }
