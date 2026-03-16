@@ -30,6 +30,7 @@ fun App() {
     var isPlay by remember { mutableStateOf(false) }
     val bufferSize = remember{ 1024 }
     val play = remember { Play(bufferSize) }
+    val sounds = remember { Sounds(true){ GenerateNoise.white(bufferSize) } }
 
     LaunchedEffect(isPlay){
       if (isPlay) {
@@ -37,10 +38,7 @@ fun App() {
         withContext(Dispatchers.Default) {
           play.start()
           while (true) {
-            play.fromPCMs(
-              Sounds(true) {
-                GenerateNoise.white(bufferSize)
-              })
+            play.fromPCMs(sounds)
           }
         }
       } else {
@@ -59,6 +57,7 @@ fun App() {
       Button(onClick = {
         showContent = !showContent
         isPlay = !isPlay
+        sounds.generator = { GenerateNoise.white(bufferSize)}
       }) {
         Text("Click me!")
       }
@@ -71,6 +70,18 @@ fun App() {
           Image(painterResource(Res.drawable.compose_multiplatform), null)
           Text("Compose: $greeting")
         }
+      }
+      Button(onClick = {
+        isPlay = !isPlay
+        sounds.generator = { GenerateNoise.pink(bufferSize)}
+      }) {
+        Text("PINK")
+      }
+      Button(onClick = {
+        isPlay = !isPlay
+        sounds.generator = { GenerateNoise.brown(bufferSize) }
+      }) {
+        Text("BROWN")
       }
     }
   }
