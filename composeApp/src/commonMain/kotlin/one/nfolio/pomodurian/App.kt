@@ -57,7 +57,7 @@ fun App() {
       Button(onClick = {
         showContent = !showContent
         isPlay = !isPlay
-        sounds.generator = { GenerateNoise.white(bufferSize)}
+        sounds.generator = { GenerateNoise.white()}
       }) {
         Text("Click me!")
       }

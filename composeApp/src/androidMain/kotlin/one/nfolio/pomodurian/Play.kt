@@ -1,15 +1,23 @@
 package one.nfolio.pomodurian
 
-actual object PlayNoise {
-  actual fun white() {
+actual class Play {
+  actual fun fromPCMs(sounds: List<Sounds>) {
     TODO("さよーならまたいつか！...スマホはまだ考えてない。スマホ版もあればいいかなってだけで、まだ作る気はない。")
   }
 
-  actual fun brown() {
+  actual fun start() {
     TODO("そゆことなんで")
   }
 
-  actual fun pink() {
+  actual fun stop() {
     TODO("気が向いて、必要性が高くなったら作るます。")
+  }
+
+  actual fun close() {
+    TODO("布団が吹っ飛んだ")
+  }
+
+  actual constructor(bufferSize: Int) {
+    TODO("ｳｪ")
   }
 }

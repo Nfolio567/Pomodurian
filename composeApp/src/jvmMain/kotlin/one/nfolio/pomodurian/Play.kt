@@ -3,7 +3,7 @@ package one.nfolio.pomodurian
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.SourceDataLine
-import kotlin.text.format
+import kotlin.math.tanh
 
 actual class Play {
   val sampleRate = 44100f
@@ -17,9 +17,22 @@ actual class Play {
     line?.start()
   }
 
-  actual fun fromPCMs(sounds: Sounds) {
-    val soundBuffer = sounds.generator()
-    line?.write(soundBuffer, 0, soundBuffer.size)
+  actual fun fromPCMs(sounds: List<Sounds>) {
+    val buffer = ByteArray(bufferSize * 2)
+
+    for (i in 0 until bufferSize) {
+      var mix = 0.0f
+      for (j in sounds) {
+        mix += j.generator() * j.volume
+      }
+      mix = tanh(mix)
+
+      val sample = (mix * Short.MAX_VALUE).toInt()
+      buffer[i * 2] = (sample and 0xFF).toByte()
+      buffer[(i * 2) + 1] = ((sample shr 8) and 0xFF).toByte()
+    }
+
+    line?.write(buffer, 0, buffer.size)
   }
 
   actual fun start() {
