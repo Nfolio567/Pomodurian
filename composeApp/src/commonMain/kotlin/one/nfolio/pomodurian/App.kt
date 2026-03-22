@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +29,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -40,9 +39,8 @@ import pomodurian.composeapp.generated.resources.Res
 import pomodurian.composeapp.generated.resources.compose_multiplatform
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
-import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.time.Clock
 
 val ColorScheme.transparent: Color get() = Color(0x00000000)
 
@@ -63,10 +61,14 @@ fun App() {
     var isPlay by remember { mutableStateOf(false) }
 
     var isTimerStart by remember { mutableStateOf(true) }
-    var time by remember { mutableStateOf(25.minutes) }
+    var timerTime by remember { mutableStateOf(Duration.ZERO) }
+    val workTime = remember { 25.minutes }
 
-    val bufferSize = remember { 1024 }
-    val play = remember { Play(bufferSize) }
+    val startTime = remember { atomic(Clock.System.now()) }
+    val elapsed = remember { atomic(Duration.ZERO) }
+    // var isReset = remember { false }
+
+    val play = remember { Play(1024) }
     val sounds = remember { Sounds(true, 0.3f){ GenerateNoise.white() } }
 
     val playIconHeight = remember { 50.0 }
@@ -89,12 +91,18 @@ fun App() {
 
     LaunchedEffect(isTimerStart) {
       if (isTimerStart) {
+        startTime.value = Clock.System.now()
+        println(startTime)
         withContext(Dispatchers.Default) {
           while (true) {
-            time -= 1.seconds
-            delay(1000)
+            val now = Clock.System.now()
+            timerTime = workTime - (now - startTime.value) - elapsed.value
+            delay(10)
           }
         }
+      } else {
+        val now = Clock.System.now()
+        elapsed.value += now - startTime.value
       }
     }
 
@@ -122,7 +130,7 @@ fun App() {
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
           Text( // time
-            time.format(),
+            timerTime.format(),
             modifier = Modifier,
             fontSize = 80.sp
           )
