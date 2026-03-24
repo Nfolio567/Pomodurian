@@ -70,7 +70,7 @@ fun main() = application {
       contentSwitch = ::App
     },
     state = windowState,
-    visible = windowFlag,
+    //visible = windowFlag,
     undecorated = true,
     transparent = true,
     resizable = false

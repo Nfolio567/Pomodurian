@@ -41,6 +41,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.math.sqrt
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.seconds
 
 val ColorScheme.transparent: Color get() = Color(0x00000000)
 
@@ -56,23 +57,21 @@ fun App() {
   MaterialTheme(
     colorScheme = lightColorScheme
   ) {
+    var isPomodoroStarted by remember { mutableStateOf(false) }
 
     var showContent by remember { mutableStateOf(false) }
     var isPlay by remember { mutableStateOf(false) }
 
-    var isTimerStart by remember { mutableStateOf(true) }
+    var isTimerStart by remember { mutableStateOf(false) }
+    var isTimeOut by remember { mutableStateOf(false) }
     var timerTime by remember { mutableStateOf(Duration.ZERO) }
-    val workTime = remember { 25.minutes }
+    val workTime = 25.minutes + 1.seconds
 
     val startTime = remember { atomic(Clock.System.now()) }
     val elapsed = remember { atomic(Duration.ZERO) }
-    // var isReset = remember { false }
 
     val play = remember { Play(1024) }
     val sounds = remember { Sounds(true, 0.3f){ GenerateNoise.white() } }
-
-    val playIconHeight = remember { 50.0 }
-    val playIconWidth = remember { 2 * sqrt(5.0) / 5 * playIconHeight } // 2√5/5 * y
 
     /*LaunchedEffect(isPlay){
       if (isPlay) {
@@ -92,11 +91,13 @@ fun App() {
     LaunchedEffect(isTimerStart) {
       if (isTimerStart) {
         startTime.value = Clock.System.now()
-        println(startTime)
         withContext(Dispatchers.Default) {
-          while (true) {
+          while (!isTimeOut) {
             val now = Clock.System.now()
             timerTime = workTime - (now - startTime.value) - elapsed.value
+
+            if (timerTime <= Duration.ZERO) isTimeOut = true
+
             delay(10)
           }
         }
@@ -120,7 +121,9 @@ fun App() {
         contentAlignment = Alignment.Center
       ) {
         CircularProgressIndicator( // Time progress
-          progress = 0.5f,
+          progress = {
+            (timerTime / workTime).toFloat()
+          },
           modifier = Modifier
             .fillMaxSize()
             .padding(10.dp),
@@ -129,43 +132,16 @@ fun App() {
         Column( // time & play stop button
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
-          Text( // time
-            timerTime.format(),
-            modifier = Modifier,
-            fontSize = 80.sp
-          )
-          Box( // button
-            modifier = Modifier
-              .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
-              ) {
-                println("PlayIcon click")
-                isPlay = !isPlay
-                isTimerStart = !isTimerStart
-              }
-          ) {
-            val primaryColor = MaterialTheme.colorScheme.primary
-
-            Canvas(
-              modifier = Modifier
-                .height(playIconHeight.dp)
-                .width(playIconWidth.dp)
-            ) {
-              val curveClearance = 5f
-              val controlPoint = 2f
-
-              val path = Path().apply {
-                moveTo(0f, curveClearance)
-                lineTo(0f, size.height - curveClearance)
-                quadraticTo(controlPoint, size.height - controlPoint, curveClearance, size.height - curveClearance)
-                lineTo(size.width - curveClearance / 2, size.height / 2 + curveClearance / 2)
-                quadraticTo(size.width - controlPoint, size.height / 2, size.width - curveClearance / 2, size.height / 2 - curveClearance / 2)
-                lineTo(curveClearance, curveClearance)
-                quadraticTo(controlPoint, controlPoint, 0f, curveClearance)
-                close()
-              }
-              drawPath(path, color = primaryColor)
+          if (!isPomodoroStarted) {
+            Timer.StartView {
+              isPomodoroStarted = true
+              isTimerStart = true
+            }
+          } else {
+            Timer.TimeView(timerTime) {
+              println("PlayIcon click")
+              isPlay = !isPlay
+              isTimerStart = !isTimerStart
             }
           }
         }
@@ -173,7 +149,7 @@ fun App() {
       Button(onClick = {
         showContent = !showContent
         isPlay = !isPlay
-        sounds.generator = { GenerateNoise.white()}
+        sounds.generator = { GenerateNoise.white() }
       }) {
         Text("Click me!")
       }
