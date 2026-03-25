@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.sqrt
@@ -22,7 +23,11 @@ object Timer {
   @Composable
   fun StartView(onClick: () -> Unit) {
     Button(onClick = onClick) {
-      Text("Start")
+      Text(
+        "Start",
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 30.sp
+      )
     }
   }
 

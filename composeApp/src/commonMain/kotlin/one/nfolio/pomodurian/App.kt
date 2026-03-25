@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,7 +52,8 @@ fun App() {
 
   val lightColorScheme = lightColorScheme(
     primary = Color(0xFFFFD84D),
-    primaryContainer = Color(0xFFF5EEDC)
+    primaryContainer = Color(0xFFF5EEDC),
+    onPrimary = Color(0xFF4F5D2F)
   )
 
   MaterialTheme(
@@ -139,7 +141,6 @@ fun App() {
             }
           } else {
             Timer.TimeView(timerTime) {
-              println("PlayIcon click")
               isPlay = !isPlay
               isTimerStart = !isTimerStart
             }
@@ -151,7 +152,10 @@ fun App() {
         isPlay = !isPlay
         sounds.generator = { GenerateNoise.white() }
       }) {
-        Text("Click me!")
+        Text(
+          "Click me!",
+          fontWeight = FontWeight.ExtraBold
+        )
       }
       AnimatedVisibility(showContent) {
         val greeting = remember { Greeting().greet() }
