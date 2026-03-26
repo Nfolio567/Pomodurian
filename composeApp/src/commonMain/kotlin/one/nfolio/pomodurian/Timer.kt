@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.Font
 
 import pomodurian.composeapp.generated.resources.Res
-import pomodurian.composeapp.generated.resources.Manrope_VariableFont_wght
+import pomodurian.composeapp.generated.resources.Guanine
 
 import kotlin.math.sqrt
 import kotlin.time.Duration
@@ -28,11 +27,11 @@ import kotlin.time.Duration
 object Timer {
   @Composable
   fun StartView(onClick: () -> Unit) {
-    Button(onClick = onClick) {
+    MainButton(onClick = onClick) {
       Text(
-        "Start",
+        "START",
         fontSize = 30.sp,
-        fontFamily = FontFamily(Font(Res.font.Manrope_VariableFont_wght, FontWeight.ExtraBold))
+        fontFamily = FontFamily(Font(Res.font.Guanine, FontWeight.ExtraBold))
       )
     }
   }
