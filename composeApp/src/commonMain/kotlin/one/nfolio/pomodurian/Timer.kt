@@ -13,9 +13,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.jetbrains.compose.resources.Font
+
+import pomodurian.composeapp.generated.resources.Res
+import pomodurian.composeapp.generated.resources.Manrope_VariableFont_wght
+
 import kotlin.math.sqrt
 import kotlin.time.Duration
 
@@ -25,8 +31,8 @@ object Timer {
     Button(onClick = onClick) {
       Text(
         "Start",
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 30.sp
+        fontSize = 30.sp,
+        fontFamily = FontFamily(Font(Res.font.Manrope_VariableFont_wght, FontWeight.ExtraBold))
       )
     }
   }
@@ -71,5 +77,6 @@ object Timer {
         }
         drawPath(path, color = primaryColor)
       }
-    }  }
+    }
+  }
 }

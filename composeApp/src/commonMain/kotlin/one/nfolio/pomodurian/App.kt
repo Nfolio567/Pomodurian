@@ -52,6 +52,7 @@ fun App() {
 
   val lightColorScheme = lightColorScheme(
     primary = Color(0xFFFFD84D),
+
     primaryContainer = Color(0xFFF5EEDC),
     onPrimary = Color(0xFF4F5D2F)
   )
