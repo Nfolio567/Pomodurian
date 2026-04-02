@@ -7,19 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.Font
-
-import pomodurian.composeapp.generated.resources.Res
-import pomodurian.composeapp.generated.resources.Guanine
 
 import kotlin.math.sqrt
 import kotlin.time.Duration
@@ -28,10 +22,10 @@ object Timer {
   @Composable
   fun StartView(onClick: () -> Unit) {
     MainButton(onClick = onClick) {
-      Text(
+      MainFontText(
         "START",
         fontSize = 30.sp,
-        fontFamily = FontFamily(Font(Res.font.Guanine, FontWeight.ExtraBold))
+        weight = FontWeight.ExtraBold
       )
     }
   }
@@ -41,10 +35,11 @@ object Timer {
     val playIconHeight = 50.0
     val playIconWidth = 2 * sqrt(5.0) / 5 * playIconHeight // 2√5/5 * y
 
-    Text( // time
+    MainFontText( // time
       timerTime.format(),
-      modifier = Modifier,
-      fontSize = 80.sp
+      fontSize = 80.sp,
+      weight = FontWeight.Medium,
+      color = MaterialTheme.colorScheme.secondary
     )
     Box( // button
       modifier = Modifier

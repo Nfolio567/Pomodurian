@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +47,8 @@ import org.jetbrains.compose.resources.painterResource
 
 import pomodurian.composeapp.generated.resources.Res
 import pomodurian.composeapp.generated.resources.compose_multiplatform
+import pomodurian.composeapp.generated.resources.pink_noise
+import pomodurian.composeapp.generated.resources.white_noise
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.math.sqrt
@@ -62,8 +65,9 @@ fun App() {
   val lightColorScheme = lightColorScheme(
     primary = Color(0xFFF2633D),
     secondary = Color(0xFF303E1C),
-    secondaryContainer = Color(0xFFF68E75),
-    primaryContainer = Color(0xFFF5F2DE),
+    secondaryContainer = Color(0xFFF5B6A8),
+    primaryContainer = Color(0xFFE5B44D),
+    background = Color(0xFFF5F2DE),
     onPrimary = Color(0xFFECD83A)
   )
 
@@ -77,16 +81,15 @@ fun App() {
 
     var isTimerStart by remember { mutableStateOf(false) }
     var isTimeOut by remember { mutableStateOf(false) }
-    val workTime = 25.minutes + 1.seconds
+    val workTime = 1.minutes + 1.seconds
     var timerTime by remember { mutableStateOf(workTime) }
 
     val startTime = remember { atomic(Clock.System.now()) }
     val elapsed = remember { atomic(Duration.ZERO) }
 
     val play = remember { Play(1024) }
-    val sounds = remember { Sounds(true, 0.3f){ GenerateNoise.white() } }
+    val sounds = remember { Sounds(true, 0.3f) { GenerateNoise.white() } }
 
-    val primary = MaterialTheme.colorScheme.primary
     val secondary = MaterialTheme.colorScheme.secondary
 
     /*LaunchedEffect(isPlay){
@@ -123,82 +126,80 @@ fun App() {
       }
     }
 
-    Column(
-      modifier = Modifier
-        .background(MaterialTheme.colorScheme.primaryContainer)
-        .safeContentPadding()
-        .fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-
-      Canvas(
+    Box() {
+      Column(
         modifier = Modifier
-          .fillMaxWidth()
-          .height(20.dp)
-          .padding(top = 10.dp)
+          .background(MaterialTheme.colorScheme.primaryContainer)
+          .safeContentPadding()
+          .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
       ) {
-        drawPath(
-          Path().apply {
-            moveTo(0f, 0f)
-            lineTo(size.width, 0f)
-            moveTo(0f, size.height)
-            lineTo(size.width, size.height)
-          },
-          color = secondary,
-          style = Stroke(width = 5f)
-        )
-        drawLine(
-          color = primary,
-          start = Offset(0f, size.height / 2),
-          end = Offset(size.width, size.height / 2),
-          strokeWidth = size.height
-        )
-      }
-      Box( // Timer
-        modifier = Modifier
-          .fillMaxWidth()
-          .aspectRatio(1f)
-          .padding(10.dp),
-        contentAlignment = Alignment.Center
-      ) {
-        CircularProgressIndicator( // Time progress
-          progress = {
-            (timerTime / workTime).toFloat()
-          },
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(15.dp)
-            .border(2.dp, MaterialTheme.colorScheme.secondary, CircleShape),
-          strokeWidth = 15.dp
-        )
+        DecorationBar()
+        DecorationBar()
 
-        val strokeWidth = 2.dp
-        Canvas(
+        Box( // Timer
           modifier = Modifier
-            .fillMaxSize()
-            .padding(30.dp)
+            .fillMaxWidth()
+            .aspectRatio(1f)
+            .padding(10.dp)
+            .shadow(10.dp, RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.background),
+          contentAlignment = Alignment.Center
         ) {
-          drawCircle(
-            color = secondary,
-            style = Stroke(width = strokeWidth.toPx())
+          CircularProgressIndicator( // Time progress
+            progress = {
+              (timerTime / workTime).toFloat()
+            },
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(15.dp)
+              .border(2.dp, MaterialTheme.colorScheme.secondary, CircleShape),
+            strokeWidth = 15.dp,
+            gapSize = (-10).dp
           )
-        }
-        Column( // time & play stop button
-          horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-          if (!isPomodoroStarted) {
-            Timer.StartView {
-              isPomodoroStarted = true
-              isTimerStart = true
-            }
-          } else {
-            Timer.TimeView(timerTime) {
-              isPlay = !isPlay
-              isTimerStart = !isTimerStart
+
+          val strokeWidth = 2.dp
+          Canvas(
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(30.dp)
+          ) {
+            drawCircle(
+              color = secondary,
+              style = Stroke(width = strokeWidth.toPx())
+            )
+          }
+          Column( // time & play stop button
+            horizontalAlignment = Alignment.CenterHorizontally
+          ) {
+            if (!isPomodoroStarted) {
+              Timer.StartView {
+                isPomodoroStarted = true
+                isTimerStart = true
+              }
+            } else {
+              Timer.TimeView(timerTime) {
+                isPlay = !isPlay
+                isTimerStart = !isTimerStart
+              }
             }
           }
         }
-      }
+        Column(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+            .shadow(10.dp, RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.background),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Row {
+            SelectedSound("WhiteNoise", painterResource(Res.drawable.white_noise))
+            SelectedSound("PinkNoise", painterResource(Res.drawable.pink_noise))
+          }
+
+        }
+        /*
       MainButton(onClick = {
         showContent = !showContent
         isPlay = !isPlay
@@ -230,9 +231,13 @@ fun App() {
         sounds.generator = { GenerateNoise.brown() }
       }) {
         Text("BROWN")
+      }*/
       }
     }
   }
+
+  ScrollButton()
+
 }
 
 fun Duration.format(): String {
