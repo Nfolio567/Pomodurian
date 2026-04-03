@@ -1,5 +1,7 @@
 package one.nfolio.pomodurian
 
+import one.nfolio.pomodurian.sound.Sounds
+
 actual class Play {
   actual fun fromPCMs(sounds: List<Sounds>) {
     TODO("さよーならまたいつか！...スマホはまだ考えてない。スマホ版もあればいいかなってだけで、まだ作る気はない。")

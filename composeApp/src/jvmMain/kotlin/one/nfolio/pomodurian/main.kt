@@ -18,6 +18,7 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.compose.runtime.Composable
+import one.nfolio.pomodurian.compose.App
 import org.jetbrains.compose.resources.painterResource
 
 import pomodurian.composeapp.generated.resources.Res
@@ -25,7 +26,6 @@ import pomodurian.composeapp.generated.resources.durian
 import java.awt.Toolkit
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
-import java.awt.event.WindowListener
 
 fun main() = application {
   var windowFlag by remember { mutableStateOf(true) }

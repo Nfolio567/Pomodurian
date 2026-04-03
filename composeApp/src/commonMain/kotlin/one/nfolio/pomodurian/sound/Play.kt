@@ -1,4 +1,4 @@
-package one.nfolio.pomodurian
+package one.nfolio.pomodurian.sound
 
 expect class Play {
   constructor(bufferSize: Int)

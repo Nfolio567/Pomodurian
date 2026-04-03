@@ -1,4 +1,4 @@
-package one.nfolio.pomodurian
+package one.nfolio.pomodurian.sound
 
 import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem

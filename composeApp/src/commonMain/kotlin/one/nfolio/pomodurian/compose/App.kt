@@ -1,59 +1,51 @@
-package one.nfolio.pomodurian
+package one.nfolio.pomodurian.compose
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import one.nfolio.pomodurian.sound.GenerateNoise
+import one.nfolio.pomodurian.sound.Play
+import one.nfolio.pomodurian.sound.Sounds
+import one.nfolio.pomodurian.util.ContentSize
+
 import org.jetbrains.compose.resources.painterResource
 
 import pomodurian.composeapp.generated.resources.Res
-import pomodurian.composeapp.generated.resources.compose_multiplatform
 import pomodurian.composeapp.generated.resources.pink_noise
 import pomodurian.composeapp.generated.resources.white_noise
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
-import kotlin.math.sqrt
+
 import kotlin.time.Clock
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 val ColorScheme.transparent: Color get() = Color(0x00000000)
@@ -66,7 +58,7 @@ fun App() {
     primary = Color(0xFFF2633D),
     secondary = Color(0xFF303E1C),
     secondaryContainer = Color(0xFFF5B6A8),
-    primaryContainer = Color(0xFFE5B44D),
+    primaryContainer = Color(0xFFFFC135),
     background = Color(0xFFF5F2DE),
     onPrimary = Color(0xFFECD83A)
   )
@@ -74,9 +66,11 @@ fun App() {
   MaterialTheme(
     colorScheme = lightColorScheme
   ) {
+    var pointerPosition by remember { mutableStateOf(Offset.Zero) }
+    var appScreenSize by remember { mutableStateOf(ContentSize(0.dp, 0.dp)) }
+
     var isPomodoroStarted by remember { mutableStateOf(false) }
 
-    var showContent by remember { mutableStateOf(false) }
     var isPlay by remember { mutableStateOf(false) }
 
     var isTimerStart by remember { mutableStateOf(false) }
@@ -92,6 +86,10 @@ fun App() {
 
     val secondary = MaterialTheme.colorScheme.secondary
 
+    val scrollButtonSize = ContentSize(100.dp, 40.dp)
+    val scrollButtonPadding = 5.dp
+    var showScrollButton by remember { mutableStateOf(false) }
+
     /*LaunchedEffect(isPlay){
       if (isPlay) {
         println("unko")
@@ -106,6 +104,10 @@ fun App() {
         play.stop()
       }
     }*/
+
+    BoxWithConstraints {
+
+    }
 
     LaunchedEffect(isTimerStart) {
       if (isTimerStart) {
@@ -126,7 +128,30 @@ fun App() {
       }
     }
 
-    Box() {
+    BoxWithConstraints(
+      modifier = Modifier
+        .pointerInput(Unit) {
+          awaitPointerEventScope {
+            while (true) {
+              val event = awaitPointerEvent()
+              pointerPosition = event.changes.first().position
+              if (
+                pointerPosition.x.dp >= appScreenSize.width - scrollButtonSize.width + scrollButtonPadding &&
+                pointerPosition.y.dp >= appScreenSize.height / 2 - scrollButtonSize.height / 2 &&
+                pointerPosition.x.dp <= appScreenSize.width - scrollButtonPadding &&
+                pointerPosition.y.dp <= appScreenSize.height / 2 + scrollButtonSize.height / 2
+              ) {
+                showScrollButton = true
+              } else {
+                showScrollButton = false
+              }
+            }
+          }
+        }
+    ) {
+      appScreenSize.width = maxWidth
+      appScreenSize.height = maxHeight
+      println("${with(LocalDensity.current) {maxHeight.toPx()}}, ${with(LocalDensity.current) {maxWidth.toPx()}}")
       Column(
         modifier = Modifier
           .background(MaterialTheme.colorScheme.primaryContainer)
@@ -233,11 +258,25 @@ fun App() {
         Text("BROWN")
       }*/
       }
+      AnimatedVisibility(
+        visible = showScrollButton,
+        enter = scaleIn(
+          animationSpec = spring(
+            dampingRatio = 0.4f,
+            stiffness = 200f
+          )
+        ),
+        exit = scaleOut(),
+        modifier = Modifier
+          .padding(horizontal = scrollButtonPadding)
+          .width(scrollButtonSize.width)
+          .height(scrollButtonSize.height)
+          .align(Alignment.CenterEnd)
+      ) {
+        ScrollButton()
+      }
     }
   }
-
-  ScrollButton()
-
 }
 
 fun Duration.format(): String {
