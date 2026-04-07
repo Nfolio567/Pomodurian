@@ -136,14 +136,17 @@ fun App() {
               val event = awaitPointerEvent()
               pointerPosition = event.changes.first().position
               if (
-                pointerPosition.x.dp >= appScreenSize.width - scrollButtonSize.width + scrollButtonPadding &&
-                pointerPosition.y.dp >= appScreenSize.height / 2 - scrollButtonSize.height / 2 &&
-                pointerPosition.x.dp <= appScreenSize.width - scrollButtonPadding &&
-                pointerPosition.y.dp <= appScreenSize.height / 2 + scrollButtonSize.height / 2
+                pointerPosition.x.toDp() >= appScreenSize.width - scrollButtonSize.width + scrollButtonPadding &&
+                pointerPosition.y.toDp() >= appScreenSize.height / 2 - scrollButtonSize.height / 2 &&
+                pointerPosition.x.toDp() <= appScreenSize.width - scrollButtonPadding &&
+                pointerPosition.y.toDp() <= appScreenSize.height / 2 + scrollButtonSize.height / 2
               ) {
                 showScrollButton = true
               } else {
                 showScrollButton = false
+                println("chin")
+                println("${pointerPosition.x.dp}, ${pointerPosition.y.dp}")
+                println("${appScreenSize.width}, ${appScreenSize.height}")
               }
             }
           }

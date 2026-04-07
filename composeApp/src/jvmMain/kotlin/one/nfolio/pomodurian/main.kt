@@ -38,7 +38,7 @@ fun main() = application {
       rememberWindowState(
       width = windowWidth,
       height = windowHeight,
-      position = WindowPosition((screenSize.width - windowWidth.toPx()).dp, 0.dp)
+      position = WindowPosition((screenSize.width.dp - windowWidth), 0.dp)
     )
   }
 
