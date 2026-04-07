@@ -30,7 +30,7 @@ object Timer {
   }
 
   @Composable
-  fun TimeView(timerTime: Duration, onPlayClick: () -> Unit) {
+  fun TimeView(timerTime: Duration, timerFlag: Boolean, onPlayClick: () -> Unit) {
     val playIconHeight = 50.0
     val playIconWidth = 2 * sqrt(5.0) / 5 * playIconHeight // 2√5/5 * y
 
@@ -58,7 +58,7 @@ object Timer {
         val curveClearance = 5f
         val controlPoint = 2f
 
-        val path = Path().apply {
+        val playPath = Path().apply {
           moveTo(0f, curveClearance)
           lineTo(0f, size.height - curveClearance)
           quadraticTo(controlPoint, size.height - controlPoint, curveClearance, size.height - curveClearance)
@@ -73,7 +73,21 @@ object Timer {
           quadraticTo(controlPoint, controlPoint, 0f, curveClearance)
           close()
         }
-        drawPath(path, color = primaryColor)
+
+        val pausePath = Path().apply {
+          moveTo(0f, 0f)
+          lineTo(0f, size.height)
+          lineTo(size.width / 3, size.height)
+          lineTo(size.width / 3, 0f)
+          close()
+
+          moveTo(size.width / 3 * 2, 0f)
+          lineTo(size.width / 3 * 2, size.height)
+          lineTo(size.width, size.height)
+          lineTo(size.width, 0f)
+          close()
+        }
+        drawPath(if (timerFlag) playPath else pausePath, color = primaryColor)
       }
     }
   }

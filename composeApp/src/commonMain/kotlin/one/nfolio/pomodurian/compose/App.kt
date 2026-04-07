@@ -144,9 +144,6 @@ fun App() {
                 showScrollButton = true
               } else {
                 showScrollButton = false
-                println("chin")
-                println("${pointerPosition.x.dp}, ${pointerPosition.y.dp}")
-                println("${appScreenSize.width}, ${appScreenSize.height}")
               }
             }
           }
@@ -206,7 +203,7 @@ fun App() {
                 isTimerStart = true
               }
             } else {
-              Timer.TimeView(timerTime) {
+              Timer.TimeView(timerTime, isTimerStart) {
                 isPlay = !isPlay
                 isTimerStart = !isTimerStart
               }
